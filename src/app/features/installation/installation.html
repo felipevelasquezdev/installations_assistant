@@ -1,2 +1,9 @@
 <!-- src/app/features/installation/installation.html -->
-<app-client-info />
+
+@if (currentStep() === 1) {
+  <app-client-info (formCompleted)="nextStep()" />
+}
+
+@if (currentStep() === 2) {
+  <app-service-info (formCompleted)="nextStep()" (goBack)="prevStep()" />
+}
