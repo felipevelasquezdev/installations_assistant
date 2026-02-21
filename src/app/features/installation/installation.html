@@ -1,9 +1,36 @@
 <!-- src/app/features/installation/installation.html -->
 
-@if (currentStep() === 1) {
-  <app-client-info (formCompleted)="nextStep()" />
-}
+<div class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 w-full max-w-md p-8">
 
-@if (currentStep() === 2) {
-  <app-service-info (formCompleted)="nextStep()" (goBack)="prevStep()" />
-}
+    <!-- Encabezado siempre visible -->
+    <div class="flex flex-col items-center mb-8">
+      <img
+        src="CompleteLogo.png"
+        alt="AJ Global"
+        class="h-24 object-contain mb-6"
+      />
+      <h1 class="text-2xl font-semibold text-gray-900 text-center">
+        Generador de notificación de mensaje de instalación 📡
+      </h1>
+      <p class="text-gray-500 text-sm mt-1">Paso {{ currentStep() }} de 2 — {{ stepTitle() }}</p>
+    </div>
+
+    <!-- Contenido del step activo -->
+    @if (currentStep() === 1) {
+      <app-client-info
+        [savedData]="clientData()"
+        (formCompleted)="nextStep()"
+      />
+    }
+
+    @if (currentStep() === 2) {
+      <app-service-info
+        [savedData]="serviceData()"
+        (formCompleted)="nextStep()"
+        (goBack)="prevStep()"
+      />
+    }
+
+  </div>
+</div>
