@@ -1,9 +1,8 @@
-// src/app/features/installation/steps/service-info.ts
-
-import { Component, inject, output, OnInit, signal } from '@angular/core';
+import { Component, inject, output, input, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ServiceType } from '../../../core/models/client.model';
-import { InstallationFormService } from '../installation-form';
+import { ServiceFormData } from '../installation-form';
+import { StepComponent } from '../../../core/models/step.model';
 
 @Component({
   selector: 'app-service-info',
@@ -11,13 +10,13 @@ import { InstallationFormService } from '../installation-form';
   templateUrl: './service-info.html',
   styleUrl: './service-info.css',
 })
-export class ServiceInfo implements OnInit {
+export class ServiceInfo implements StepComponent<ServiceFormData>, OnInit {
 
   readonly formCompleted = output<void>();
   readonly goBack = output<void>();
+  readonly savedData = input<ServiceFormData | null>(null);
 
   private readonly fb = inject(FormBuilder);
-  private readonly formService = inject(InstallationFormService);
 
   readonly form = this.fb.group({
     serviceType: this.fb.control<ServiceType>('fiber', Validators.required),
@@ -27,37 +26,45 @@ export class ServiceInfo implements OnInit {
     tvCount:     this.fb.control<number | null>(null),
   });
 
-  // Signals para controlar visibilidad
   readonly isFiber = signal(true);
   readonly showMbps = signal(true);
   readonly hasTv = signal(false);
 
   ngOnInit(): void {
-    // Primero restaurar datos guardados
-    const saved = this.formService.serviceData();
-    if (saved) {
-      this.form.patchValue(saved);
+    const data = this.savedData();
+    if (data) {
+      this.setData(data);
+    } else {
+      this.syncSignals();
+      this.updateMbpsValidation();
     }
+    this.form.valueChanges.subscribe(() => this.syncSignals());
+  }
 
-    // Sincronizar signals con el estado actual del form
-    this.syncSignals();
+  getData(): ServiceFormData {
+    return {
+      serviceType: this.form.controls.serviceType.value!,
+      hasInternet: this.form.controls.hasInternet.value ?? true,
+      mbps:        this.form.controls.mbps.value,
+      hasTv:       this.form.controls.hasTv.value ?? false,
+      tvCount:     this.form.controls.tvCount.value,
+    };
+  }
 
-    // Aplicar validaciones según el estado restaurado
-    this.updateMbpsValidation();
-    if (this.hasTv()) {
+  setData(data: ServiceFormData): void {
+    this.form.patchValue(data);
+    if (data.hasTv) {
       this.form.controls.tvCount.setValidators([Validators.required, Validators.min(1)]);
       this.form.controls.tvCount.updateValueAndValidity();
     }
-
-    // Escuchar cambios del form para mantener signals sincronizados
-    this.form.valueChanges.subscribe(() => this.syncSignals());
+    this.syncSignals();
+    this.updateMbpsValidation();
   }
 
   private syncSignals(): void {
     const fiber = this.form.controls.serviceType.value === 'fiber';
     const internet = this.form.controls.hasInternet.value === true;
     const tv = this.form.controls.hasTv.value === true;
-
     this.isFiber.set(fiber);
     this.hasTv.set(tv);
     this.showMbps.set(fiber ? internet : true);
@@ -102,28 +109,10 @@ export class ServiceInfo implements OnInit {
 
   onSubmit(): void {
     if (this.form.invalid) return;
-
-    this.formService.saveServiceData({
-      serviceType: this.form.controls.serviceType.value!,
-      hasInternet: this.form.controls.hasInternet.value ?? true,
-      mbps:        this.form.controls.mbps.value,
-      hasTv:       this.form.controls.hasTv.value ?? false,
-      tvCount:     this.form.controls.tvCount.value,
-    });
-
     this.formCompleted.emit();
   }
 
   onGoBack(): void {
-    // Guardar los datos actuales aunque el form esté incompleto
-    this.formService.saveServiceData({
-      serviceType: this.form.controls.serviceType.value!,
-      hasInternet: this.form.controls.hasInternet.value ?? true,
-      mbps:        this.form.controls.mbps.value,
-      hasTv:       this.form.controls.hasTv.value ?? false,
-      tvCount:     this.form.controls.tvCount.value,
-    });
-
     this.goBack.emit();
   }
 }

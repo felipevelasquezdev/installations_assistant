@@ -1,217 +1,199 @@
 <!-- src/app/features/installation/steps/service-info.html -->
 
-<div class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 w-full max-w-md p-8">
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
 
-    <!-- Encabezado siempre visible -->
-    <div class="flex flex-col items-center mb-8">
-      <img
-        src="CompleteLogo.png"
-        alt="AJ Global"
-        class="h-24 object-contain mb-6"
-      />
-      <h1 class="text-2xl font-semibold text-gray-900 text-center">
-        Generador de notificación de mensaje de instalación 📡
-      </h1>
-      <p class="text-gray-500 text-sm mt-1">Paso 2 de 2 — Información del servicio</p>
+  <!-- Tipo de servicio -->
+  <fieldset class="mb-6">
+    <legend class="text-sm font-medium text-gray-700 mb-3">
+      Servicio
+    </legend>
+    <div class="grid grid-cols-2 gap-3">
+
+      <label
+        class="flex items-center justify-center p-3 rounded-xl border-2 cursor-pointer transition-colors"
+        [class.border-blue-600]="form.controls.serviceType.value === 'fiber'"
+        [class.bg-blue-50]="form.controls.serviceType.value === 'fiber'"
+        [class.border-gray-200]="form.controls.serviceType.value !== 'fiber'"
+      >
+        <input
+          type="radio"
+          formControlName="serviceType"
+          value="fiber"
+          class="hidden"
+          (change)="onServiceTypeChange('fiber')"
+        />
+        <span class="text-sm font-medium text-gray-700">Fibra</span>
+      </label>
+
+      <label
+        class="flex items-center justify-center p-3 rounded-xl border-2 cursor-pointer transition-colors"
+        [class.border-blue-600]="form.controls.serviceType.value === 'radio'"
+        [class.bg-blue-50]="form.controls.serviceType.value === 'radio'"
+        [class.border-gray-200]="form.controls.serviceType.value !== 'radio'"
+      >
+        <input
+          type="radio"
+          formControlName="serviceType"
+          value="radio"
+          class="hidden"
+          (change)="onServiceTypeChange('radio')"
+        />
+        <span class="text-sm font-medium text-gray-700">Radio Enlace</span>
+      </label>
+
     </div>
+  </fieldset>
 
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <!-- Con internet - solo fibra -->
+  @if (isFiber()) {
+    <fieldset class="mb-4">
+      <legend class="text-sm font-medium text-gray-700 mb-3">
+        Con internet
+      </legend>
+      <div class="grid grid-cols-2 gap-3">
 
-      <!-- Tipo de servicio -->
-      <fieldset class="mb-6">
-        <legend class="text-sm font-medium text-gray-700 mb-3">
-          Servicio
-        </legend>
-        <div class="grid grid-cols-2 gap-3">
-
-          <label
-            class="flex items-center justify-center p-3 rounded-xl border-2 cursor-pointer transition-colors"
-            [class.border-blue-600]="form.controls.serviceType.value === 'fiber'"
-            [class.bg-blue-50]="form.controls.serviceType.value === 'fiber'"
-            [class.border-gray-200]="form.controls.serviceType.value !== 'fiber'"
-          >
-            <input
-              type="radio"
-              formControlName="serviceType"
-              value="fiber"
-              class="hidden"
-              (change)="onServiceTypeChange('fiber')"
-            />
-            <span class="text-sm font-medium text-gray-700">Fibra</span>
-          </label>
-
-          <label
-            class="flex items-center justify-center p-3 rounded-xl border-2 cursor-pointer transition-colors"
-            [class.border-blue-600]="form.controls.serviceType.value === 'radio'"
-            [class.bg-blue-50]="form.controls.serviceType.value === 'radio'"
-            [class.border-gray-200]="form.controls.serviceType.value !== 'radio'"
-          >
-            <input
-              type="radio"
-              formControlName="serviceType"
-              value="radio"
-              class="hidden"
-              (change)="onServiceTypeChange('radio')"
-            />
-            <span class="text-sm font-medium text-gray-700">Radio Enlace</span>
-          </label>
-
-        </div>
-      </fieldset>
-
-      <!-- Con internet - solo fibra -->
-      @if (isFiber()) {
-        <fieldset class="mb-4">
-          <legend class="text-sm font-medium text-gray-700 mb-3">
-            Con internet
-          </legend>
-          <div class="grid grid-cols-2 gap-3">
-
-            <label
-              class="flex items-center justify-center p-3 rounded-xl border-2 cursor-pointer transition-colors"
-              [class.border-blue-600]="form.controls.hasInternet.value === true"
-              [class.bg-blue-50]="form.controls.hasInternet.value === true"
-              [class.border-gray-200]="form.controls.hasInternet.value !== true"
-            >
-              <input
-                type="radio"
-                formControlName="hasInternet"
-                [value]="true"
-                class="hidden"
-                (change)="onHasInternetChange()"
-              />
-              <span class="text-sm font-medium text-gray-700">Sí</span>
-            </label>
-
-            <label
-              class="flex items-center justify-center p-3 rounded-xl border-2 cursor-pointer transition-colors"
-              [class.border-blue-600]="form.controls.hasInternet.value === false"
-              [class.bg-blue-50]="form.controls.hasInternet.value === false"
-              [class.border-gray-200]="form.controls.hasInternet.value !== false"
-            >
-              <input
-                type="radio"
-                formControlName="hasInternet"
-                [value]="false"
-                class="hidden"
-                (change)="onHasInternetChange()"
-              />
-              <span class="text-sm font-medium text-gray-700">No</span>
-            </label>
-
-          </div>
-        </fieldset>
-      }
-
-      <!-- Cantidad de Mbps - visible según showMbps -->
-      @if (showMbps()) {
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1">
-            Cantidad de Mbps
-          </label>
+        <label
+          class="flex items-center justify-center p-3 rounded-xl border-2 cursor-pointer transition-colors"
+          [class.border-blue-600]="form.controls.hasInternet.value === true"
+          [class.bg-blue-50]="form.controls.hasInternet.value === true"
+          [class.border-gray-200]="form.controls.hasInternet.value !== true"
+        >
           <input
-            type="number"
-            inputmode="numeric"
-            formControlName="mbps"
-            placeholder="Ej: 30"
-            min="1"
-            class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            type="radio"
+            formControlName="hasInternet"
+            [value]="true"
+            class="hidden"
+            (change)="onHasInternetChange()"
           />
-          @if (form.controls.mbps.invalid && form.controls.mbps.touched) {
-            <p class="text-red-500 text-xs mt-1">Los Mbps son obligatorios</p>
-          }
-        </div>
-      }
+          <span class="text-sm font-medium text-gray-700">Sí</span>
+        </label>
 
-      <!-- Con TV - solo fibra -->
-      @if (isFiber()) {
-        <fieldset class="mb-4">
-          <legend class="text-sm font-medium text-gray-700 mb-3">
-            Con TV
-          </legend>
-          <div class="grid grid-cols-2 gap-3">
-
-            <label
-              class="flex items-center justify-center p-3 rounded-xl border-2 cursor-pointer transition-colors"
-              [class.border-blue-600]="form.controls.hasTv.value === true"
-              [class.bg-blue-50]="form.controls.hasTv.value === true"
-              [class.border-gray-200]="form.controls.hasTv.value !== true"
-            >
-              <input
-                type="radio"
-                formControlName="hasTv"
-                [value]="true"
-                class="hidden"
-                (change)="onHasTvChange(true)"
-              />
-              <span class="text-sm font-medium text-gray-700">Sí</span>
-            </label>
-
-            <label
-              class="flex items-center justify-center p-3 rounded-xl border-2 cursor-pointer transition-colors"
-              [class.border-blue-600]="form.controls.hasTv.value === false"
-              [class.bg-blue-50]="form.controls.hasTv.value === false"
-              [class.border-gray-200]="form.controls.hasTv.value !== false"
-            >
-              <input
-                type="radio"
-                formControlName="hasTv"
-                [value]="false"
-                class="hidden"
-                (change)="onHasTvChange(false)"
-              />
-              <span class="text-sm font-medium text-gray-700">No</span>
-            </label>
-
-          </div>
-        </fieldset>
-
-        <!-- Cantidad de TVs - solo si tiene TV -->
-        @if (hasTv()) {
-          <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-1">
-              Cantidad de TVs
-            </label>
-            <input
-              type="number"
-              inputmode="numeric"
-              formControlName="tvCount"
-              placeholder="Ej: 2"
-              min="1"
-              class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-            />
-            @if (form.controls.tvCount.invalid && form.controls.tvCount.touched) {
-              <p class="text-red-500 text-xs mt-1">La cantidad de TVs es obligatoria</p>
-            }
-          </div>
-        }
-      }
-
-      <!-- Botones -->
-      <div class="flex gap-3 mt-8">
-        <button
-          type="button"
-          (click)="onGoBack()"
-          class="w-1/3 py-3 rounded-xl text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+        <label
+          class="flex items-center justify-center p-3 rounded-xl border-2 cursor-pointer transition-colors"
+          [class.border-blue-600]="form.controls.hasInternet.value === false"
+          [class.bg-blue-50]="form.controls.hasInternet.value === false"
+          [class.border-gray-200]="form.controls.hasInternet.value !== false"
         >
-          Volver
-        </button>
-        <button
-          type="submit"
-          [disabled]="form.invalid"
-          class="w-2/3 py-3 rounded-xl text-sm font-semibold transition-colors"
-          [class.bg-blue-600]="form.valid"
-          [class.text-white]="form.valid"
-          [class.hover:bg-blue-700]="form.valid"
-          [class.bg-gray-100]="form.invalid"
-          [class.text-gray-400]="form.invalid"
-          [class.cursor-not-allowed]="form.invalid"
-        >
-          Continuar
-        </button>
+          <input
+            type="radio"
+            formControlName="hasInternet"
+            [value]="false"
+            class="hidden"
+            (change)="onHasInternetChange()"
+          />
+          <span class="text-sm font-medium text-gray-700">No</span>
+        </label>
+
       </div>
+    </fieldset>
+  }
 
-    </form>
+  <!-- Cantidad de Mbps -->
+  @if (showMbps()) {
+    <div class="mb-4">
+      <label class="block text-sm font-medium text-gray-700 mb-1">
+        Cantidad de Mbps
+      </label>
+      <input
+        type="number"
+        inputmode="numeric"
+        formControlName="mbps"
+        placeholder="Ej: 30"
+        min="1"
+        class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+      />
+      @if (form.controls.mbps.invalid && form.controls.mbps.touched) {
+        <p class="text-red-500 text-xs mt-1">Los Mbps son obligatorios</p>
+      }
+    </div>
+  }
+
+  <!-- Con TV - solo fibra -->
+  @if (isFiber()) {
+    <fieldset class="mb-4">
+      <legend class="text-sm font-medium text-gray-700 mb-3">
+        Con TV
+      </legend>
+      <div class="grid grid-cols-2 gap-3">
+
+        <label
+          class="flex items-center justify-center p-3 rounded-xl border-2 cursor-pointer transition-colors"
+          [class.border-blue-600]="form.controls.hasTv.value === true"
+          [class.bg-blue-50]="form.controls.hasTv.value === true"
+          [class.border-gray-200]="form.controls.hasTv.value !== true"
+        >
+          <input
+            type="radio"
+            formControlName="hasTv"
+            [value]="true"
+            class="hidden"
+            (change)="onHasTvChange(true)"
+          />
+          <span class="text-sm font-medium text-gray-700">Sí</span>
+        </label>
+
+        <label
+          class="flex items-center justify-center p-3 rounded-xl border-2 cursor-pointer transition-colors"
+          [class.border-blue-600]="form.controls.hasTv.value === false"
+          [class.bg-blue-50]="form.controls.hasTv.value === false"
+          [class.border-gray-200]="form.controls.hasTv.value !== false"
+        >
+          <input
+            type="radio"
+            formControlName="hasTv"
+            [value]="false"
+            class="hidden"
+            (change)="onHasTvChange(false)"
+          />
+          <span class="text-sm font-medium text-gray-700">No</span>
+        </label>
+
+      </div>
+    </fieldset>
+
+    <!-- Cantidad de TVs -->
+    @if (hasTv()) {
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Cantidad de TVs
+        </label>
+        <input
+          type="number"
+          inputmode="numeric"
+          formControlName="tvCount"
+          placeholder="Ej: 2"
+          min="1"
+          class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+        />
+        @if (form.controls.tvCount.invalid && form.controls.tvCount.touched) {
+          <p class="text-red-500 text-xs mt-1">La cantidad de TVs es obligatoria</p>
+        }
+      </div>
+    }
+  }
+
+  <!-- Botones -->
+  <div class="flex gap-3 mt-8">
+    <button
+      type="button"
+      (click)="onGoBack()"
+      class="w-1/3 py-3 rounded-xl text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+    >
+      Volver
+    </button>
+    <button
+      type="submit"
+      [disabled]="form.invalid"
+      class="w-2/3 py-3 rounded-xl text-sm font-semibold transition-colors"
+      [class.bg-blue-600]="form.valid"
+      [class.text-white]="form.valid"
+      [class.hover:bg-blue-700]="form.valid"
+      [class.bg-gray-100]="form.invalid"
+      [class.text-gray-400]="form.invalid"
+      [class.cursor-not-allowed]="form.invalid"
+    >
+      Continuar
+    </button>
   </div>
-</div>
+
+</form>
