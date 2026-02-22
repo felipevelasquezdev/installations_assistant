@@ -66,6 +66,7 @@ export class SummaryFormatterService {
     lines.push(`Tipo: ${locationTypeName}`);
     lines.push(`${locationTypeName}: ${location.locationName}`);
     lines.push(`${addressLabel}: ${location.addressOrReference}`);
+    lines.push(`Coordenadas: ${location.latitude?.toFixed(6)}, ${location.longitude?.toFixed(6)}`);
 
     return lines.join('\n');
   }

@@ -1,0 +1,10 @@
+/* src/app/features/installation/steps/location-info.css */
+
+.map-container {
+  height: 224px;
+  width: 100%;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  z-index: 0;
+  position: relative;
+}
