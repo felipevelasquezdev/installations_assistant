@@ -45,11 +45,20 @@
       />
     }
 
+    @if (currentStep() === 4) {
+      <app-technical-info
+        [savedData]="technicalData()"
+        (formCompleted)="nextStep()"
+        (goBack)="prevStep()"
+      />
+    }
+
     @if (isLastStep()) {
       <app-installation-summary
         [clientData]="clientData()!"
         [serviceData]="serviceData()!"
         [locationData]="locationData()!"
+        [technicalData]="technicalData()!"
         (goBack)="prevStep()"
       />
     }
