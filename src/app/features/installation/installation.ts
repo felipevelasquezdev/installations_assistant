@@ -3,11 +3,12 @@
 import { Component, signal, viewChild, computed, inject } from '@angular/core';
 import { ClientInfo } from './steps/client-info';
 import { ServiceInfo } from './steps/service-info';
+import { InstallationSummary } from './steps/installation-summary';
 import { InstallationFormService } from './installation-form';
 
 @Component({
   selector: 'app-installation',
-  imports: [ClientInfo, ServiceInfo],
+  imports: [ClientInfo, ServiceInfo, InstallationSummary],
   templateUrl: './installation.html',
   styleUrl: './installation.css',
 })
@@ -23,11 +24,13 @@ export class Installation {
   readonly clientData = this.formService.clientData;
   readonly serviceData = this.formService.serviceData;
 
-  // computed deriva su valor del signal currentStep automáticamente
+  readonly totalSteps = 2;
+
   readonly stepTitle = computed(() => {
     const titles: Record<number, string> = {
       1: 'Información del cliente',
       2: 'Información del servicio',
+      3: 'Resumen de instalación',
     };
     return titles[this.currentStep()] ?? '';
   });
