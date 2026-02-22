@@ -9,6 +9,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout código
         uses: actions/checkout@v4
@@ -23,6 +26,6 @@ jobs:
         run: npm ci
 
       - name: Deploy a GitHub Pages
-        run: npx ng deploy --base-href=/installations_assistant/
+        run: npx ng deploy --base-href=/installations_assistant/ --no-silent
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
