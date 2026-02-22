@@ -1,6 +1,5 @@
 <!-- src/app/features/installation/steps/installation-summary.html -->
 
-<!-- Caja de resultado -->
 <div class="relative bg-gray-950 rounded-xl p-4 mb-6">
 
   <!-- Botón copiar -->
@@ -25,7 +24,7 @@
   </button>
 
   <!-- Contenido del resumen -->
-  <div #summaryContent class="text-sm font-mono pr-8 space-y-3">
+  <div class="text-sm font-mono pr-8 space-y-3">
 
     <p class="text-white font-bold">Nueva Instalacion AJ Global</p>
 
@@ -60,6 +59,10 @@
             }
           </span>
         </p>
+      }
+
+      @if (serviceData().pointNumber) {
+        <p class="text-green-400">Punto: <span class="text-white">{{ serviceData().pointNumber }}</span></p>
       }
     </div>
 
