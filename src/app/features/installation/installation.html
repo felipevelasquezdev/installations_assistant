@@ -13,10 +13,16 @@
       <h1 class="text-2xl font-semibold text-gray-900 text-center">
         Generador de notificación de mensaje de instalación 📡
       </h1>
-      <p class="text-gray-500 text-sm mt-1">Paso {{ currentStep() }} de 2 — {{ stepTitle() }}</p>
+      <p class="text-gray-500 text-sm mt-1">
+        @if (currentStep() <= totalSteps) {
+          Paso {{ currentStep() }} de {{ totalSteps }} — {{ stepTitle() }}
+        } @else {
+          {{ stepTitle() }}
+        }
+      </p>
     </div>
 
-    <!-- Contenido del step activo -->
+    <!-- Steps -->
     @if (currentStep() === 1) {
       <app-client-info
         [savedData]="clientData()"
@@ -28,6 +34,14 @@
       <app-service-info
         [savedData]="serviceData()"
         (formCompleted)="nextStep()"
+        (goBack)="prevStep()"
+      />
+    }
+
+    @if (currentStep() === 3) {
+      <app-installation-summary
+        [clientData]="clientData()!"
+        [serviceData]="serviceData()!"
         (goBack)="prevStep()"
       />
     }
