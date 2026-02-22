@@ -72,6 +72,13 @@
       <p class="text-green-400">Tipo: <span class="text-white">{{ locationTypeName }}</span></p>
       <p class="text-green-400">{{ locationTypeName }}: <span class="text-white">{{ locationData().locationName }}</span></p>
       <p class="text-green-400">{{ addressLabel }}: <span class="text-white">{{ locationData().addressOrReference }}</span></p>
+      @if (locationData().latitude && locationData().longitude) {
+        <p class="text-green-400">Coordenadas:
+          <span class="text-white">
+            {{ locationData().latitude?.toFixed(6) }}, {{ locationData().longitude?.toFixed(6) }}
+          </span>
+        </p>
+      }
     </div>
 
   </div>

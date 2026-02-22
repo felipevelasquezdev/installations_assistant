@@ -24,6 +24,8 @@ export interface LocationFormData {
   locationType: LocationType;
   locationName: string;
   addressOrReference: string;
+  latitude: number | null;
+  longitude: number | null;
 }
 
 @Injectable({
