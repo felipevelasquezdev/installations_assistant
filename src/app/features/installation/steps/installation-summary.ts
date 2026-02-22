@@ -1,7 +1,7 @@
 // src/app/features/installation/steps/installation-summary.ts
 
 import { Component, input, output, inject } from '@angular/core';
-import { ClientFormData, ServiceFormData, LocationFormData } from '../installation-form';
+import { ClientFormData, ServiceFormData, LocationFormData, TechnicalFormData } from '../installation-form';
 import { SummaryFormatterService } from '../summary-formatter';
 
 @Component({
@@ -12,9 +12,10 @@ import { SummaryFormatterService } from '../summary-formatter';
 })
 export class InstallationSummary {
 
-  readonly clientData   = input.required<ClientFormData>();
-  readonly serviceData  = input.required<ServiceFormData>();
-  readonly locationData = input.required<LocationFormData>();
+  readonly clientData    = input.required<ClientFormData>();
+  readonly serviceData   = input.required<ServiceFormData>();
+  readonly locationData  = input.required<LocationFormData>();
+  readonly technicalData = input.required<TechnicalFormData>();
   readonly goBack = output<void>();
 
   private readonly formatter = inject(SummaryFormatterService);
@@ -51,7 +52,8 @@ export class InstallationSummary {
     const text = this.formatter.buildWhatsAppText(
       this.clientData(),
       this.serviceData(),
-      this.locationData()
+      this.locationData(),
+      this.technicalData()
     );
     await navigator.clipboard.writeText(text);
     this.copied = true;
@@ -62,7 +64,8 @@ export class InstallationSummary {
     const text = this.formatter.buildWhatsAppText(
       this.clientData(),
       this.serviceData(),
-      this.locationData()
+      this.locationData(),
+      this.technicalData()
     );
     const encoded = encodeURIComponent(text);
     window.open(`https://wa.me/?text=${encoded}`, '_blank');

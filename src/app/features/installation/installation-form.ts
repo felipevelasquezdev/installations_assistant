@@ -28,13 +28,20 @@ export interface LocationFormData {
   longitude: number | null;
 }
 
+export interface TechnicalFormData {
+  seal: number | null;
+  wire: number | null;
+  node: string | null;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class InstallationFormService {
-  readonly clientData   = signal<ClientFormData | null>(null);
-  readonly serviceData  = signal<ServiceFormData | null>(null);
-  readonly locationData = signal<LocationFormData | null>(null);
+  readonly clientData    = signal<ClientFormData | null>(null);
+  readonly serviceData   = signal<ServiceFormData | null>(null);
+  readonly locationData  = signal<LocationFormData | null>(null);
+  readonly technicalData = signal<TechnicalFormData | null>(null);
 
   saveClientData(data: ClientFormData): void {
     this.clientData.set(data);
@@ -46,5 +53,9 @@ export class InstallationFormService {
 
   saveLocationData(data: LocationFormData): void {
     this.locationData.set(data);
+  }
+
+  saveTechnicalData(data: TechnicalFormData): void {
+    this.technicalData.set(data);
   }
 }

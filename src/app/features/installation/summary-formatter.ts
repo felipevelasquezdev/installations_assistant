@@ -1,7 +1,7 @@
 // src/app/features/installation/summary-formatter.ts
 
 import { Injectable } from '@angular/core';
-import { ClientFormData, ServiceFormData, LocationFormData } from './installation-form';
+import { ClientFormData, ServiceFormData, LocationFormData, TechnicalFormData } from './installation-form';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +25,8 @@ export class SummaryFormatterService {
   buildWhatsAppText(
     client: ClientFormData,
     service: ServiceFormData,
-    location: LocationFormData
+    location: LocationFormData,
+    technical: TechnicalFormData
   ): string {
     const locationTypeName = location.locationType === 'neighborhood' ? 'Barrio' : 'Vereda';
     const addressLabel = location.locationType === 'neighborhood' ? 'Direccion' : 'Referencia';
@@ -67,6 +68,15 @@ export class SummaryFormatterService {
     lines.push(`${locationTypeName}: ${location.locationName}`);
     lines.push(`${addressLabel}: ${location.addressOrReference}`);
     lines.push(`Coordenadas: ${location.latitude?.toFixed(6)}, ${location.longitude?.toFixed(6)}`);
+
+    lines.push('');
+    lines.push('*Datos Tecnicos*');
+    if (service.serviceType === 'fiber') {
+      lines.push(`Precinto: ${technical.seal}`);
+      lines.push(`Hilo: ${technical.wire}`);
+    } else {
+      lines.push(`Nodo: ${technical.node}`);
+    }
 
     return lines.join('\n');
   }
