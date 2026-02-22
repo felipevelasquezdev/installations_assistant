@@ -17,6 +17,7 @@ export interface ServiceFormData {
   mbps: number | null;
   hasTv: boolean;
   tvCount: number | null;
+  pointNumber: number | null;
 }
 
 @Injectable({

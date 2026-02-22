@@ -50,6 +50,10 @@ export class SummaryFormatterService {
       }`);
     }
 
+    if (service.pointNumber) {
+      lines.push(`Punto: ${service.pointNumber}`);
+    }
+
     return lines.join('\n');
   }
 }

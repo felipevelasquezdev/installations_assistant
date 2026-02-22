@@ -1,3 +1,5 @@
+// src/app/features/installation/steps/service-info.ts
+
 import { Component, inject, output, input, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ServiceType } from '../../../core/models/client.model';
@@ -19,11 +21,12 @@ export class ServiceInfo implements StepComponent<ServiceFormData>, OnInit {
   private readonly fb = inject(FormBuilder);
 
   readonly form = this.fb.group({
-    serviceType: this.fb.control<ServiceType>('fiber', Validators.required),
-    hasInternet: this.fb.control<boolean>(true),
-    mbps:        this.fb.control<number | null>(null, [Validators.required, Validators.min(1)]),
-    hasTv:       this.fb.control<boolean>(false),
-    tvCount:     this.fb.control<number | null>(null),
+    serviceType:  this.fb.control<ServiceType>('fiber', Validators.required),
+    hasInternet:  this.fb.control<boolean>(true),
+    mbps:         this.fb.control<number | null>(null, [Validators.required, Validators.min(1)]),
+    hasTv:        this.fb.control<boolean>(false),
+    tvCount:      this.fb.control<number | null>(null),
+    pointNumber:  this.fb.control<number | null>(null, [Validators.min(1)]),
   });
 
   readonly isFiber = signal(true);
@@ -43,11 +46,12 @@ export class ServiceInfo implements StepComponent<ServiceFormData>, OnInit {
 
   getData(): ServiceFormData {
     return {
-      serviceType: this.form.controls.serviceType.value!,
-      hasInternet: this.form.controls.hasInternet.value ?? true,
-      mbps:        this.form.controls.mbps.value,
-      hasTv:       this.form.controls.hasTv.value ?? false,
-      tvCount:     this.form.controls.tvCount.value,
+      serviceType:  this.form.controls.serviceType.value!,
+      hasInternet:  this.form.controls.hasInternet.value ?? true,
+      mbps:         this.form.controls.mbps.value,
+      hasTv:        this.form.controls.hasTv.value ?? false,
+      tvCount:      this.form.controls.tvCount.value,
+      pointNumber:  this.form.controls.pointNumber.value || null,
     };
   }
 
