@@ -48,6 +48,23 @@ export class InstallationSummary {
       : 'Referencia';
   }
 
+  get routerBoardProfile(): string {
+    return this.formatter.buildRouterBoardProfile(
+      this.clientData(),
+      this.serviceData(),
+      this.locationData()
+    );
+  }
+
+  get smartOltProfile(): string {
+    return this.formatter.buildSmartOltProfile(
+      this.clientData(),
+      this.serviceData(),
+      this.locationData(),
+      this.technicalData()
+    );
+  }
+
   async onCopy(): Promise<void> {
     const text = this.formatter.buildWhatsAppText(
       this.clientData(),

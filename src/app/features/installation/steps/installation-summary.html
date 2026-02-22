@@ -92,6 +92,20 @@
       }
     </div>
 
+    <!-- Perfil Router Board -->
+    <div class="space-y-1">
+      <p class="text-gray-400 font-bold">Perfil Router Board</p>
+      <p class="text-yellow-300 whitespace-pre-wrap">{{ routerBoardProfile }}</p>
+    </div>
+
+    <!-- Perfil Smart OLT - solo fibra -->
+    @if (isFiber) {
+      <div class="space-y-1">
+        <p class="text-gray-400 font-bold">Perfil Smart OLT</p>
+        <p class="text-yellow-300 whitespace-pre-wrap">{{ smartOltProfile }}</p>
+      </div>
+    }
+
   </div>
 </div>
 
