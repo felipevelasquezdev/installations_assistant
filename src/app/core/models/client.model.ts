@@ -2,6 +2,7 @@
 
 export type ClientType = 'natural' | 'legal';
 export type ServiceType = 'fiber' | 'radio';
+export type LocationType = 'neighborhood' | 'village';
 
 export interface NaturalPersonClient {
   type: 'natural';

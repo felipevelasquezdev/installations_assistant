@@ -1,7 +1,7 @@
 // src/app/features/installation/steps/installation-summary.ts
 
 import { Component, input, output, inject } from '@angular/core';
-import { ClientFormData, ServiceFormData } from '../installation-form';
+import { ClientFormData, ServiceFormData, LocationFormData } from '../installation-form';
 import { SummaryFormatterService } from '../summary-formatter';
 
 @Component({
@@ -12,8 +12,9 @@ import { SummaryFormatterService } from '../summary-formatter';
 })
 export class InstallationSummary {
 
-  readonly clientData = input.required<ClientFormData>();
-  readonly serviceData = input.required<ServiceFormData>();
+  readonly clientData   = input.required<ClientFormData>();
+  readonly serviceData  = input.required<ServiceFormData>();
+  readonly locationData = input.required<LocationFormData>();
   readonly goBack = output<void>();
 
   private readonly formatter = inject(SummaryFormatterService);
@@ -36,15 +37,33 @@ export class InstallationSummary {
     return this.serviceData().serviceType === 'fiber';
   }
 
+  get locationTypeName(): string {
+    return this.locationData().locationType === 'neighborhood' ? 'Barrio' : 'Vereda';
+  }
+
+  get addressLabel(): string {
+    return this.locationData().locationType === 'neighborhood'
+      ? 'Direccion'
+      : 'Referencia';
+  }
+
   async onCopy(): Promise<void> {
-    const text = this.formatter.buildWhatsAppText(this.clientData(), this.serviceData());
+    const text = this.formatter.buildWhatsAppText(
+      this.clientData(),
+      this.serviceData(),
+      this.locationData()
+    );
     await navigator.clipboard.writeText(text);
     this.copied = true;
     setTimeout(() => this.copied = false, 2000);
   }
 
   onWhatsApp(): void {
-    const text = this.formatter.buildWhatsAppText(this.clientData(), this.serviceData());
+    const text = this.formatter.buildWhatsAppText(
+      this.clientData(),
+      this.serviceData(),
+      this.locationData()
+    );
     const encoded = encodeURIComponent(text);
     window.open(`https://wa.me/?text=${encoded}`, '_blank');
   }

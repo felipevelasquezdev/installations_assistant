@@ -1,7 +1,7 @@
 // src/app/features/installation/summary-formatter.ts
 
 import { Injectable } from '@angular/core';
-import { ClientFormData, ServiceFormData } from './installation-form';
+import { ClientFormData, ServiceFormData, LocationFormData } from './installation-form';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +22,14 @@ export class SummaryFormatterService {
     return data.serviceType === 'fiber' ? 'Fibra Optica' : 'Radio Enlace';
   }
 
-  buildWhatsAppText(client: ClientFormData, service: ServiceFormData): string {
+  buildWhatsAppText(
+    client: ClientFormData,
+    service: ServiceFormData,
+    location: LocationFormData
+  ): string {
+    const locationTypeName = location.locationType === 'neighborhood' ? 'Barrio' : 'Vereda';
+    const addressLabel = location.locationType === 'neighborhood' ? 'Direccion' : 'Referencia';
+
     const lines: string[] = [
       '*Nueva Instalacion AJ Global*',
       '',
@@ -53,6 +60,12 @@ export class SummaryFormatterService {
     if (service.pointNumber) {
       lines.push(`Punto: ${service.pointNumber}`);
     }
+
+    lines.push('');
+    lines.push('*Ubicacion*');
+    lines.push(`Tipo: ${locationTypeName}`);
+    lines.push(`${locationTypeName}: ${location.locationName}`);
+    lines.push(`${addressLabel}: ${location.addressOrReference}`);
 
     return lines.join('\n');
   }
