@@ -1,7 +1,8 @@
 // src/app/features/installation/steps/installation-summary.ts
 
-import { Component, input, output, viewChild, ElementRef } from '@angular/core';
+import { Component, input, output, inject } from '@angular/core';
 import { ClientFormData, ServiceFormData } from '../installation-form';
+import { SummaryFormatterService } from '../summary-formatter';
 
 @Component({
   selector: 'app-installation-summary',
@@ -15,72 +16,36 @@ export class InstallationSummary {
   readonly serviceData = input.required<ServiceFormData>();
   readonly goBack = output<void>();
 
-  readonly summaryRef = viewChild<ElementRef<HTMLElement>>('summaryContent');
+  private readonly formatter = inject(SummaryFormatterService);
 
   copied = false;
 
   get clientName(): string {
-    const client = this.clientData();
-    return client.clientType === 'natural'
-      ? `${client.firstName} ${client.lastName}`
-      : client.companyName;
+    return this.formatter.getClientName(this.clientData());
   }
 
   get clientTypeName(): string {
-    return this.clientData().clientType === 'natural'
-      ? 'Persona Natural'
-      : 'Persona Juridica';
+    return this.formatter.getClientTypeName(this.clientData());
   }
 
   get serviceTypeName(): string {
-    return this.serviceData().serviceType === 'fiber'
-      ? 'Fibra Optica'
-      : 'Radio Enlace';
+    return this.formatter.getServiceTypeName(this.serviceData());
   }
 
   get isFiber(): boolean {
     return this.serviceData().serviceType === 'fiber';
   }
 
-  private buildWhatsAppText(): string {
-    const client = this.clientData();
-    const service = this.serviceData();
-
-    const lines: string[] = [
-      '*Nueva Instalacion AJ Global*',
-      '',
-      '*Datos del Cliente*',
-      `Tipo: ${this.clientTypeName}`,
-      `Nombre: ${this.clientName}`,
-      `Telefono: ${client.phone}`,
-      '',
-      '*Servicio*',
-      `Tipo: ${this.serviceTypeName}`,
-    ];
-
-    if (service.serviceType === 'fiber') {
-      lines.push(`Internet: ${service.hasInternet ? 'Si' : 'No'}`);
-    }
-
-    if (service.mbps) {
-      lines.push(`Velocidad: ${service.mbps} Mbps`);
-    }
-
-    if (service.serviceType === 'fiber') {
-      lines.push(`TV: ${service.hasTv ? `Si (${service.tvCount} ${service.tvCount === 1 ? 'TV' : 'TVs'})` : 'No'}`);
-    }
-
-    return lines.join('\n');
-  }
-
   async onCopy(): Promise<void> {
-    await navigator.clipboard.writeText(this.buildWhatsAppText());
+    const text = this.formatter.buildWhatsAppText(this.clientData(), this.serviceData());
+    await navigator.clipboard.writeText(text);
     this.copied = true;
     setTimeout(() => this.copied = false, 2000);
   }
 
   onWhatsApp(): void {
-    const encoded = encodeURIComponent(this.buildWhatsAppText());
+    const text = this.formatter.buildWhatsAppText(this.clientData(), this.serviceData());
+    const encoded = encodeURIComponent(text);
     window.open(`https://wa.me/?text=${encoded}`, '_blank');
   }
 
