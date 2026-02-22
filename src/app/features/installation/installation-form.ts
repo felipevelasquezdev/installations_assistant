@@ -1,7 +1,7 @@
 // src/app/features/installation/installation-form.ts
 
 import { Injectable, signal } from '@angular/core';
-import { ClientType, ServiceType } from '../../core/models/client.model';
+import { ClientType, ServiceType, LocationType } from '../../core/models/client.model';
 
 export interface ClientFormData {
   clientType: ClientType;
@@ -20,12 +20,19 @@ export interface ServiceFormData {
   pointNumber: number | null;
 }
 
+export interface LocationFormData {
+  locationType: LocationType;
+  locationName: string;
+  addressOrReference: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class InstallationFormService {
-  readonly clientData = signal<ClientFormData | null>(null);
-  readonly serviceData = signal<ServiceFormData | null>(null);
+  readonly clientData   = signal<ClientFormData | null>(null);
+  readonly serviceData  = signal<ServiceFormData | null>(null);
+  readonly locationData = signal<LocationFormData | null>(null);
 
   saveClientData(data: ClientFormData): void {
     this.clientData.set(data);
@@ -33,5 +40,9 @@ export class InstallationFormService {
 
   saveServiceData(data: ServiceFormData): void {
     this.serviceData.set(data);
+  }
+
+  saveLocationData(data: LocationFormData): void {
+    this.locationData.set(data);
   }
 }

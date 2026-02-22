@@ -11,7 +11,7 @@
         class="h-24 object-contain mb-6"
       />
       <h1 class="text-2xl font-semibold text-gray-900 text-center">
-        Generador de notificación de mensaje de instalación
+        Generador de notificacion de mensaje de instalacion
       </h1>
       <p class="text-gray-500 text-sm mt-1">
         @if (!isLastStep()) {
@@ -22,7 +22,6 @@
       </p>
     </div>
 
-    <!-- Steps -->
     @if (currentStep() === 1) {
       <app-client-info
         [savedData]="clientData()"
@@ -38,10 +37,19 @@
       />
     }
 
+    @if (currentStep() === 3) {
+      <app-location-info
+        [savedData]="locationData()"
+        (formCompleted)="nextStep()"
+        (goBack)="prevStep()"
+      />
+    }
+
     @if (isLastStep()) {
       <app-installation-summary
         [clientData]="clientData()!"
         [serviceData]="serviceData()!"
+        [locationData]="locationData()!"
         (goBack)="prevStep()"
       />
     }

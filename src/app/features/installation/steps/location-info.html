@@ -1,0 +1,103 @@
+<!-- src/app/features/installation/steps/location-info.html -->
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+  <!-- Tipo de ubicación -->
+  <fieldset class="mb-6">
+    <legend class="text-sm font-medium text-gray-700 mb-3">
+      Tipo de ubicacion
+    </legend>
+    <div class="grid grid-cols-2 gap-3">
+
+      <label
+        class="flex items-center justify-center p-3 rounded-xl border-2 cursor-pointer transition-colors"
+        [class.border-blue-600]="form.controls.locationType.value === 'neighborhood'"
+        [class.bg-blue-50]="form.controls.locationType.value === 'neighborhood'"
+        [class.border-gray-200]="form.controls.locationType.value !== 'neighborhood'"
+      >
+        <input
+          type="radio"
+          formControlName="locationType"
+          value="neighborhood"
+          class="hidden"
+          (change)="onLocationTypeChange('neighborhood')"
+        />
+        <span class="text-sm font-medium text-gray-700">Barrio</span>
+      </label>
+
+      <label
+        class="flex items-center justify-center p-3 rounded-xl border-2 cursor-pointer transition-colors"
+        [class.border-blue-600]="form.controls.locationType.value === 'village'"
+        [class.bg-blue-50]="form.controls.locationType.value === 'village'"
+        [class.border-gray-200]="form.controls.locationType.value !== 'village'"
+      >
+        <input
+          type="radio"
+          formControlName="locationType"
+          value="village"
+          class="hidden"
+          (change)="onLocationTypeChange('village')"
+        />
+        <span class="text-sm font-medium text-gray-700">Vereda</span>
+      </label>
+
+    </div>
+  </fieldset>
+
+  <!-- Nombre del barrio o vereda -->
+  <div class="mb-4">
+    <label class="block text-sm font-medium text-gray-700 mb-1">
+      {{ locationNameLabel }}
+    </label>
+    <input
+      type="text"
+      formControlName="locationName"
+      [placeholder]="'Ej: ' + locationNameLabel"
+      class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+    />
+    @if (form.controls.locationName.invalid && form.controls.locationName.touched) {
+      <p class="text-red-500 text-xs mt-1">{{ locationNameLabel }} es obligatorio</p>
+    }
+  </div>
+
+  <!-- Dirección o referencia -->
+  <div class="mb-4">
+    <label class="block text-sm font-medium text-gray-700 mb-1">
+      {{ addressLabel }}
+    </label>
+    <textarea
+      formControlName="addressOrReference"
+      [placeholder]="addressPlaceholder"
+      rows="3"
+      class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"
+    ></textarea>
+    @if (form.controls.addressOrReference.invalid && form.controls.addressOrReference.touched) {
+      <p class="text-red-500 text-xs mt-1">{{ addressLabel }} es obligatorio</p>
+    }
+  </div>
+
+  <!-- Botones -->
+  <div class="flex gap-3 mt-8">
+    <button
+      type="button"
+      (click)="onGoBack()"
+      class="w-1/3 py-3 rounded-xl text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+    >
+      Volver
+    </button>
+    <button
+      type="submit"
+      [disabled]="form.invalid"
+      class="w-2/3 py-3 rounded-xl text-sm font-semibold transition-colors"
+      [class.bg-blue-600]="form.valid"
+      [class.text-white]="form.valid"
+      [class.hover:bg-blue-700]="form.valid"
+      [class.bg-gray-100]="form.invalid"
+      [class.text-gray-400]="form.invalid"
+      [class.cursor-not-allowed]="form.invalid"
+    >
+      Continuar
+    </button>
+  </div>
+
+</form>
