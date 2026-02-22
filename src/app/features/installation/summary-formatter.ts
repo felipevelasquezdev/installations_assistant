@@ -56,14 +56,18 @@ export class SummaryFormatterService {
     location: LocationFormData,
     technical: TechnicalFormData
   ): string {
+    console.log('hasInternet:', service.hasInternet);
+console.log('hasTv:', service.hasTv);
+console.log('mbps:', service.mbps);
     const clientName = this.getClientName(client).toUpperCase();
     const pointSuffix = service.pointNumber ? ` PUNTO ${service.pointNumber}` : '';
+    const tvSuffix = service.hasTv ? ` +${service.tvCount}TV` : '';
     const hilo = this.padHilo(technical.wire ?? 0);
     const locationPrefix = this.getLocationPrefix(location);
     const locationName = location.locationName.toUpperCase();
 
-    // Línea 1
-    const line1 = `{codigoCliente} - ${clientName}${pointSuffix} - PRECINTO ${technical.seal} HILO ${hilo}`;
+    // Línea 1: incluye TVs si aplica
+    const line1 = `{codigoCliente} - ${clientName}${pointSuffix}${tvSuffix} - PRECINTO ${technical.seal} HILO ${hilo}`;
 
     // Línea 2
     const line2 = `(${locationPrefix} ${locationName} (${location.addressOrReference.toUpperCase()}))`;
@@ -75,11 +79,18 @@ export class SummaryFormatterService {
     const line4 = `${location.latitude?.toFixed(6)}, ${location.longitude?.toFixed(6)}`;
 
     // Línea 5
-    const internetPart = service.hasInternet ? 'solo internet' : '';
-    const tvPart = service.hasTv ? ` +${service.tvCount}TV` : '';
-    const line5 = `${internetPart}${tvPart} ${service.mbps}mbps`;
+    let line5: string;
+    if (service.hasInternet && service.hasTv) {
+      line5 = `solo internet +${service.tvCount}TV ${service.mbps}mbps`;
+    } else if (service.hasInternet && !service.hasTv) {
+      line5 = `solo internet ${service.mbps}mbps`;
+    } else if (!service.hasInternet && service.hasTv) {
+      line5 = `solo ${service.tvCount}TV`;
+    } else {
+      line5 = '';
+    }
 
-    return [line1, line2, line3, line4, line5].join('\n');
+    return [line1, line2, line3, line4, line5].filter(Boolean).join('\n');
   }
 
   // ── PERFIL ROUTER BOARD ──────────────────────────────────────
@@ -87,7 +98,8 @@ export class SummaryFormatterService {
   buildRouterBoardProfile(
     client: ClientFormData,
     service: ServiceFormData,
-    location: LocationFormData
+    location: LocationFormData,
+    technical: TechnicalFormData
   ): string {
     const locationNoSpaces = this.toUpperNoSpaces(location.locationName);
     const clientName = this.getClientName(client);
@@ -126,10 +138,11 @@ export class SummaryFormatterService {
     // Línea 3: {codigoCliente}: NOMBRE COMPLETO - (UBICACION (DIRECCION))
     const fullNameUpper = clientName.toUpperCase();
     const pointLabel = service.pointNumber ? ` PUNTO ${service.pointNumber}` : '';
+    const nodePart = service.serviceType === 'radio' ? ` NODO ${technical.node?.toUpperCase()}` : '';
     const coordsPart = service.serviceType === 'radio'
       ? ` (${location.latitude?.toFixed(6)}, ${location.longitude?.toFixed(6)})`
       : '';
-    const line3 = `{codigoCliente}: ${fullNameUpper}${pointLabel} - (${locationPrefix} ${locationName} (${location.addressOrReference.toUpperCase()}${coordsPart}))`;
+    const line3 = `{codigoCliente}: ${fullNameUpper}${pointLabel} - (${locationPrefix} ${locationName}${nodePart} (${location.addressOrReference.toUpperCase()}${coordsPart}))`;
 
     return [line1, line2, line3].join('\n');
   }
@@ -195,7 +208,7 @@ export class SummaryFormatterService {
     // Perfiles
     lines.push('');
     lines.push('*Perfil Router Board*');
-    lines.push(this.buildRouterBoardProfile(client, service, location));
+    lines.push(this.buildRouterBoardProfile(client, service, location, technical));
 
     if (service.serviceType === 'fiber') {
       lines.push('');

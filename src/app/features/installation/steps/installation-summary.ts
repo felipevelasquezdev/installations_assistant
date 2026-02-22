@@ -52,7 +52,8 @@ export class InstallationSummary {
     return this.formatter.buildRouterBoardProfile(
       this.clientData(),
       this.serviceData(),
-      this.locationData()
+      this.locationData(),
+      this.technicalData()
     );
   }
 
