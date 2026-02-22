@@ -25,7 +25,12 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
+      - name: Configurar identidad de git
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
       - name: Deploy a GitHub Pages
-        run: npx ng deploy --base-href=/installations_assistant/ --no-silent
+        run: npx ng deploy --base-href=/installations_assistant/
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
