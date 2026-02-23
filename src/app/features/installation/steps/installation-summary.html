@@ -33,6 +33,7 @@
       <p class="text-gray-400 font-bold">Datos del Cliente</p>
       <p class="text-green-400">Nombre: <span class="text-white">{{ clientName }}</span></p>
       <p class="text-green-400">Telefono: <span class="text-white">{{ clientData().phone }}</span></p>
+      <p class="text-green-400">Correo: <span class="text-white">{{ clientData().email }}</span></p>
     </div>
 
     <!-- Servicio -->
@@ -86,6 +87,7 @@
       @if (isFiber) {
         <p class="text-green-400">Precinto: <span class="text-white">{{ technicalData().seal }}</span></p>
         <p class="text-green-400">Hilo: <span class="text-white">{{ technicalData().wire }}</span></p>
+        <p class="text-green-400">Caja NAP: <span class="text-white">{{ technicalData().napBox }}</span></p>
       } @else {
         <p class="text-green-400">Nodo: <span class="text-white">{{ technicalData().node }}</span></p>
       }

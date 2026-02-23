@@ -1,3 +1,5 @@
+// src/app/features/installation/steps/client-info.ts
+
 import { Component, inject, output, input, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ClientType } from '../../../core/models/client.model';
@@ -26,6 +28,10 @@ export class ClientInfo implements StepComponent<ClientFormData>, OnInit {
       Validators.required,
       Validators.pattern(/^\d{10}$/)
     ]),
+    email:       this.fb.control('', [
+      Validators.required,
+      Validators.email,
+    ]),
   });
 
   get isNatural(): boolean {
@@ -44,6 +50,7 @@ export class ClientInfo implements StepComponent<ClientFormData>, OnInit {
       lastName:    this.form.controls.lastName.value ?? '',
       companyName: this.form.controls.companyName.value ?? '',
       phone:       this.form.controls.phone.value ?? '',
+      email:       this.form.controls.email.value ?? '',
     };
   }
 

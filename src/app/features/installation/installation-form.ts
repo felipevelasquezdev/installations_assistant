@@ -9,6 +9,7 @@ export interface ClientFormData {
   lastName: string;
   companyName: string;
   phone: string;
+  email: string;
 }
 
 export interface ServiceFormData {
@@ -32,6 +33,7 @@ export interface TechnicalFormData {
   seal: number | null;
   wire: number | null;
   node: string | null;
+  napBox: number | null;
 }
 
 @Injectable({

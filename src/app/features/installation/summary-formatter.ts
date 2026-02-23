@@ -56,9 +56,6 @@ export class SummaryFormatterService {
     location: LocationFormData,
     technical: TechnicalFormData
   ): string {
-    console.log('hasInternet:', service.hasInternet);
-console.log('hasTv:', service.hasTv);
-console.log('mbps:', service.mbps);
     const clientName = this.getClientName(client).toUpperCase();
     const pointSuffix = service.pointNumber ? ` PUNTO ${service.pointNumber}` : '';
     const tvSuffix = service.hasTv ? ` +${service.tvCount}TV` : '';
@@ -66,19 +63,11 @@ console.log('mbps:', service.mbps);
     const locationPrefix = this.getLocationPrefix(location);
     const locationName = location.locationName.toUpperCase();
 
-    // Línea 1: incluye TVs si aplica
     const line1 = `{codigoCliente} - ${clientName}${pointSuffix}${tvSuffix} - PRECINTO ${technical.seal} HILO ${hilo}`;
-
-    // Línea 2
     const line2 = `(${locationPrefix} ${locationName} (${location.addressOrReference.toUpperCase()}))`;
-
-    // Línea 3
     const line3 = client.phone;
-
-    // Línea 4
     const line4 = `${location.latitude?.toFixed(6)}, ${location.longitude?.toFixed(6)}`;
 
-    // Línea 5
     let line5: string;
     if (service.hasInternet && service.hasTv) {
       line5 = `solo internet +${service.tvCount}TV ${service.mbps}mbps`;
@@ -111,23 +100,18 @@ console.log('mbps:', service.mbps);
     let line2: string;
 
     if (client.clientType === 'natural') {
-      // Línea 1: UBICACION.NOMBRECOMPLETO
       const fullNameNoSpaces = this.toUpperNoSpaces(clientName);
       line1 = `${locationNoSpaces}.${fullNameNoSpaces}${pointSuffix}`;
 
-      // Línea 2: nombres.apellidos
       const nameParts = clientName.trim().split(' ');
       const midPoint = Math.ceil(nameParts.length / 2);
       const firstPart = this.toLowerNoSpaces(nameParts.slice(0, midPoint).join(' '));
       const secondPart = this.toLowerNoSpaces(nameParts.slice(midPoint).join(' '));
       line2 = `${firstPart}.${secondPart}${pointSuffix.toLowerCase()}`;
-
     } else {
-      // Persona jurídica
       const fullNameNoSpaces = this.toUpperNoSpaces(clientName);
       line1 = `${locationNoSpaces}.${fullNameNoSpaces}${pointSuffix}`;
 
-      // Línea 2: mitad.mitad en minúscula
       const nameLower = this.toLowerNoSpaces(clientName);
       const midPoint = Math.floor(nameLower.length / 2);
       const firstPart = nameLower.slice(0, midPoint);
@@ -135,7 +119,6 @@ console.log('mbps:', service.mbps);
       line2 = `${firstPart}.${secondPart}${pointSuffix.toLowerCase()}`;
     }
 
-    // Línea 3: {codigoCliente}: NOMBRE COMPLETO - (UBICACION (DIRECCION))
     const fullNameUpper = clientName.toUpperCase();
     const pointLabel = service.pointNumber ? ` PUNTO ${service.pointNumber}` : '';
     const nodePart = service.serviceType === 'radio' ? ` NODO ${technical.node?.toUpperCase()}` : '';
@@ -162,16 +145,16 @@ console.log('mbps:', service.mbps);
       '*Nueva Instalacion AJ Global*',
       '',
       '*Datos del Cliente*',
-      `Tipo: ${this.getClientTypeName(client)}`,
       `Nombre: ${this.getClientName(client)}`,
       `Telefono: ${client.phone}`,
+      `Correo: ${client.email}`,
       '',
       '*Servicio*',
       `Tipo: ${this.getServiceTypeName(service)}`,
     ];
 
-    if (service.serviceType === 'fiber') {
-      lines.push(`Internet: ${service.hasInternet ? 'Si' : 'No'}`);
+    if (service.serviceType === 'fiber' && !service.hasInternet) {
+      lines.push('Internet: No');
     }
 
     if (service.mbps) {
@@ -201,11 +184,11 @@ console.log('mbps:', service.mbps);
     if (service.serviceType === 'fiber') {
       lines.push(`Precinto: ${technical.seal}`);
       lines.push(`Hilo: ${technical.wire}`);
+      lines.push(`Caja NAP: ${technical.napBox}`);
     } else {
       lines.push(`Nodo: ${technical.node}`);
     }
 
-    // Perfiles
     lines.push('');
     lines.push('*Perfil Router Board*');
     lines.push(this.buildRouterBoardProfile(client, service, location, technical));

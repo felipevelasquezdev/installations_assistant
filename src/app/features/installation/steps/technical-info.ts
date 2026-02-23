@@ -21,21 +21,18 @@ export class TechnicalInfo implements StepComponent<TechnicalFormData>, OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly formService = inject(InstallationFormService);
 
-  // Necesitamos saber el tipo de servicio del step 2
   readonly isFiber = signal(true);
 
   readonly form = this.fb.group({
-    seal: this.fb.control<number | null>(null),
-    wire: this.fb.control<number | null>(null),
-    node: this.fb.control<string | null>(null),
+    seal:   this.fb.control<number | null>(null),
+    wire:   this.fb.control<number | null>(null),
+    napBox: this.fb.control<number | null>(null),
+    node:   this.fb.control<string | null>(null),
   });
 
   ngOnInit(): void {
-    // Leer el tipo de servicio guardado en el step 2
     const serviceType = this.formService.serviceData()?.serviceType;
     this.isFiber.set(serviceType === 'fiber');
-
-    // Aplicar validaciones según el tipo de servicio
     this.applyValidations();
 
     const data = this.savedData();
@@ -43,31 +40,36 @@ export class TechnicalInfo implements StepComponent<TechnicalFormData>, OnInit {
   }
 
   private applyValidations(): void {
-    const { seal, wire, node } = this.form.controls;
+    const { seal, wire, napBox, node } = this.form.controls;
 
     if (this.isFiber()) {
       seal.setValidators([Validators.required, Validators.min(1)]);
       wire.setValidators([Validators.required, Validators.min(1)]);
+      napBox.setValidators([Validators.required, Validators.min(1)]);
       node.clearValidators();
       node.reset(null);
     } else {
       node.setValidators(Validators.required);
       seal.clearValidators();
       wire.clearValidators();
+      napBox.clearValidators();
       seal.reset(null);
       wire.reset(null);
+      napBox.reset(null);
     }
 
     seal.updateValueAndValidity();
     wire.updateValueAndValidity();
+    napBox.updateValueAndValidity();
     node.updateValueAndValidity();
   }
 
   getData(): TechnicalFormData {
     return {
-      seal: this.form.controls.seal.value,
-      wire: this.form.controls.wire.value,
-      node: this.form.controls.node.value,
+      seal:   this.form.controls.seal.value,
+      wire:   this.form.controls.wire.value,
+      napBox: this.form.controls.napBox.value,
+      node:   this.form.controls.node.value,
     };
   }
 
