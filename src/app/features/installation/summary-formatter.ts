@@ -59,6 +59,102 @@ export class SummaryFormatterService {
     return pointNumber ? `P${pointNumber}` : '';
   }
 
+  // ── BLOQUE BASE (sin perfiles) ────────────────────────────────
+
+  private buildBaseLines(
+    client: ClientFormData,
+    service: ServiceFormData,
+    location: LocationFormData,
+    technical: TechnicalFormData
+  ): string[] {
+    const locationTypeName = location.locationType === 'neighborhood' ? 'Barrio' : 'Vereda';
+    const addressLabel = location.locationType === 'neighborhood' ? 'Direccion' : 'Referencia';
+
+    const lines: string[] = [
+      '*Nueva Instalacion AJ Global*',
+      '',
+      '*Datos del Cliente*',
+      `Nombre: ${this.getClientName(client)}`,
+      `Telefono: ${client.phone}`,
+      `Correo: ${client.email}`,
+      '',
+      '*Servicio*',
+      `Tipo: ${this.getServiceTypeName(service)}`,
+    ];
+
+    if (service.serviceType === 'fiber' && !service.hasInternet) {
+      lines.push('Internet: No');
+    }
+
+    if (service.mbps) {
+      lines.push(`Velocidad: ${service.mbps} Mbps`);
+    }
+
+    if (service.serviceType === 'fiber') {
+      lines.push(`TV: ${service.hasTv
+        ? `Si (${service.tvCount} ${service.tvCount === 1 ? 'TV' : 'TVs'})`
+        : 'No'
+      }`);
+    }
+
+    if (service.pointNumber) {
+      lines.push(`Punto: ${service.pointNumber}`);
+    }
+
+    lines.push('');
+    lines.push('*Ubicacion*');
+    lines.push(`Tipo: ${locationTypeName}`);
+    lines.push(`${locationTypeName}: ${location.locationName}`);
+    lines.push(`${addressLabel}: ${location.addressOrReference}`);
+    lines.push(`Coordenadas: ${location.latitude?.toFixed(6)}, ${location.longitude?.toFixed(6)}`);
+
+    lines.push('');
+    lines.push('*Datos Tecnicos*');
+    if (service.serviceType === 'fiber') {
+      lines.push(`Precinto: ${technical.seal}`);
+      lines.push(`Hilo: ${technical.wire}`);
+      lines.push(`Caja NAP: ${technical.napBox}`);
+    } else {
+      lines.push(`Nodo: ${technical.node}`);
+    }
+
+    return lines;
+  }
+
+  // ── SOLO RESUMEN (sin perfiles) ───────────────────────────────
+
+  buildSummaryOnly(
+    client: ClientFormData,
+    service: ServiceFormData,
+    location: LocationFormData,
+    technical: TechnicalFormData
+  ): string {
+    return this.buildBaseLines(client, service, location, technical).join('\n');
+  }
+
+  // ── COMPLETO (con perfiles) ───────────────────────────────────
+
+  buildWhatsAppText(
+    client: ClientFormData,
+    service: ServiceFormData,
+    location: LocationFormData,
+    technical: TechnicalFormData
+  ): string {
+    const lines = this.buildBaseLines(client, service, location, technical);
+
+    lines.push('');
+    lines.push('*Perfil Router Board*');
+    lines.push(this.buildRouterBoardProfile(client, service, location, technical));
+
+    if (service.serviceType === 'fiber') {
+      lines.push('');
+      lines.push('*Perfil Smart OLT*');
+      lines.push(this.buildSmartOltProfile(client, service, location, technical));
+    }
+
+    return lines.join('\n');
+  }
+
   // ── PERFIL SMART OLT ─────────────────────────────────────────
 
   buildSmartOltProfile(
@@ -143,77 +239,5 @@ export class SummaryFormatterService {
     const line3 = `{codigoCliente}: ${fullNameUpper}${pointLabel} - (${locationPrefix} ${locationName}${nodePart} (${addressOrReference}${coordsPart}))`;
 
     return [line1, line2, line3].join('\n');
-  }
-
-  // ── WHATSAPP TEXT ────────────────────────────────────────────
-
-  buildWhatsAppText(
-    client: ClientFormData,
-    service: ServiceFormData,
-    location: LocationFormData,
-    technical: TechnicalFormData
-  ): string {
-    const locationTypeName = location.locationType === 'neighborhood' ? 'Barrio' : 'Vereda';
-    const addressLabel = location.locationType === 'neighborhood' ? 'Direccion' : 'Referencia';
-
-    const lines: string[] = [
-      '*Nueva Instalacion AJ Global*',
-      '',
-      '*Datos del Cliente*',
-      `Nombre: ${this.getClientName(client)}`,
-      `Telefono: ${client.phone}`,
-      `Correo: ${client.email}`,
-      '',
-      '*Servicio*',
-      `Tipo: ${this.getServiceTypeName(service)}`,
-    ];
-
-    if (service.serviceType === 'fiber' && !service.hasInternet) {
-      lines.push('Internet: No');
-    }
-
-    if (service.mbps) {
-      lines.push(`Velocidad: ${service.mbps} Mbps`);
-    }
-
-    if (service.serviceType === 'fiber') {
-      lines.push(`TV: ${service.hasTv
-        ? `Si (${service.tvCount} ${service.tvCount === 1 ? 'TV' : 'TVs'})`
-        : 'No'
-      }`);
-    }
-
-    if (service.pointNumber) {
-      lines.push(`Punto: ${service.pointNumber}`);
-    }
-
-    lines.push('');
-    lines.push('*Ubicacion*');
-    lines.push(`Tipo: ${locationTypeName}`);
-    lines.push(`${locationTypeName}: ${location.locationName}`);
-    lines.push(`${addressLabel}: ${location.addressOrReference}`);
-    lines.push(`Coordenadas: ${location.latitude?.toFixed(6)}, ${location.longitude?.toFixed(6)}`);
-
-    lines.push('');
-    lines.push('*Datos Tecnicos*');
-    if (service.serviceType === 'fiber') {
-      lines.push(`Precinto: ${technical.seal}`);
-      lines.push(`Hilo: ${technical.wire}`);
-      lines.push(`Caja NAP: ${technical.napBox}`);
-    } else {
-      lines.push(`Nodo: ${technical.node}`);
-    }
-
-    lines.push('');
-    lines.push('*Perfil Router Board*');
-    lines.push(this.buildRouterBoardProfile(client, service, location, technical));
-
-    if (service.serviceType === 'fiber') {
-      lines.push('');
-      lines.push('*Perfil Smart OLT*');
-      lines.push(this.buildSmartOltProfile(client, service, location, technical));
-    }
-
-    return lines.join('\n');
   }
 }
