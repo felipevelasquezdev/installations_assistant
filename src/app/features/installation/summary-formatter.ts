@@ -24,16 +24,27 @@ export class SummaryFormatterService {
 
   // ── HELPERS PRIVADOS ─────────────────────────────────────────
 
+  private normalizeText(text: string): string {
+    return text
+      .replace(/ñ/g, 'n')
+      .replace(/Ñ/g, 'N')
+      .replace(/#/g, 'No');
+  }
+
   private removeAccents(text: string): string {
     return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   }
 
   private toUpperNoSpaces(text: string): string {
-    return this.removeAccents(text).toUpperCase().replace(/\s+/g, '');
+    return this.removeAccents(this.normalizeText(text)).toUpperCase().replace(/\s+/g, '');
   }
 
   private toLowerNoSpaces(text: string): string {
-    return this.removeAccents(text).toLowerCase().replace(/\s+/g, '');
+    return this.removeAccents(this.normalizeText(text)).toLowerCase().replace(/\s+/g, '');
+  }
+
+  private normalizeForProfile(text: string): string {
+    return this.removeAccents(this.normalizeText(text));
   }
 
   private padHilo(hilo: number): string {
@@ -56,15 +67,16 @@ export class SummaryFormatterService {
     location: LocationFormData,
     technical: TechnicalFormData
   ): string {
-    const clientName = this.getClientName(client).toUpperCase();
+    const clientName = this.normalizeForProfile(this.getClientName(client)).toUpperCase();
     const pointSuffix = service.pointNumber ? ` PUNTO ${service.pointNumber}` : '';
     const tvSuffix = service.hasTv ? ` +${service.tvCount}TV` : '';
     const hilo = this.padHilo(technical.wire ?? 0);
     const locationPrefix = this.getLocationPrefix(location);
-    const locationName = location.locationName.toUpperCase();
+    const locationName = this.normalizeForProfile(location.locationName).toUpperCase();
+    const addressOrReference = this.normalizeForProfile(location.addressOrReference).toUpperCase();
 
     const line1 = `{codigoCliente} - ${clientName}${pointSuffix}${tvSuffix} - PRECINTO ${technical.seal} HILO ${hilo}`;
-    const line2 = `(${locationPrefix} ${locationName} (${location.addressOrReference.toUpperCase()}))`;
+    const line2 = `(${locationPrefix} ${locationName} (${addressOrReference}))`;
     const line3 = client.phone;
     const line4 = `${location.latitude?.toFixed(6)}, ${location.longitude?.toFixed(6)}`;
 
@@ -94,7 +106,8 @@ export class SummaryFormatterService {
     const clientName = this.getClientName(client);
     const pointSuffix = this.getPointSuffix(service.pointNumber);
     const locationPrefix = this.getLocationPrefix(location);
-    const locationName = location.locationName.toUpperCase();
+    const locationName = this.normalizeForProfile(location.locationName).toUpperCase();
+    const addressOrReference = this.normalizeForProfile(location.addressOrReference).toUpperCase();
 
     let line1: string;
     let line2: string;
@@ -103,7 +116,7 @@ export class SummaryFormatterService {
       const fullNameNoSpaces = this.toUpperNoSpaces(clientName);
       line1 = `${locationNoSpaces}.${fullNameNoSpaces}${pointSuffix}`;
 
-      const nameParts = clientName.trim().split(' ');
+      const nameParts = this.normalizeForProfile(clientName).trim().split(' ');
       const midPoint = Math.ceil(nameParts.length / 2);
       const firstPart = this.toLowerNoSpaces(nameParts.slice(0, midPoint).join(' '));
       const secondPart = this.toLowerNoSpaces(nameParts.slice(midPoint).join(' '));
@@ -119,13 +132,15 @@ export class SummaryFormatterService {
       line2 = `${firstPart}.${secondPart}${pointSuffix.toLowerCase()}`;
     }
 
-    const fullNameUpper = clientName.toUpperCase();
+    const fullNameUpper = this.normalizeForProfile(clientName).toUpperCase();
     const pointLabel = service.pointNumber ? ` PUNTO ${service.pointNumber}` : '';
-    const nodePart = service.serviceType === 'radio' ? ` NODO ${technical.node?.toUpperCase()}` : '';
+    const nodePart = service.serviceType === 'radio'
+      ? ` NODO ${this.normalizeForProfile(technical.node ?? '').toUpperCase()}`
+      : '';
     const coordsPart = service.serviceType === 'radio'
       ? ` (${location.latitude?.toFixed(6)}, ${location.longitude?.toFixed(6)})`
       : '';
-    const line3 = `{codigoCliente}: ${fullNameUpper}${pointLabel} - (${locationPrefix} ${locationName}${nodePart} (${location.addressOrReference.toUpperCase()}${coordsPart}))`;
+    const line3 = `{codigoCliente}: ${fullNameUpper}${pointLabel} - (${locationPrefix} ${locationName}${nodePart} (${addressOrReference}${coordsPart}))`;
 
     return [line1, line2, line3].join('\n');
   }
