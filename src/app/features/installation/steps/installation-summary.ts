@@ -78,7 +78,18 @@ export class InstallationSummary {
     setTimeout(() => this.copied = false, 2000);
   }
 
-  onWhatsApp(): void {
+  onWhatsAppSummary(): void {
+    const text = this.formatter.buildSummaryOnly(
+      this.clientData(),
+      this.serviceData(),
+      this.locationData(),
+      this.technicalData()
+    );
+    const encoded = encodeURIComponent(text);
+    window.open(`https://wa.me/?text=${encoded}`, '_blank');
+  }
+
+  onWhatsAppFull(): void {
     const text = this.formatter.buildWhatsAppText(
       this.clientData(),
       this.serviceData(),
