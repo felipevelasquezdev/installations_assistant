@@ -1,8 +1,9 @@
 // src/app/features/installation/steps/installation-summary.ts
 
-import { Component, input, output, inject } from '@angular/core';
+import { Component, input, output, inject, OnInit } from '@angular/core';
 import { ClientFormData, ServiceFormData, LocationFormData, TechnicalFormData } from '../installation-form';
 import { SummaryFormatterService } from '../summary-formatter';
+import { SupabaseService } from '../supabase';
 
 @Component({
   selector: 'app-installation-summary',
@@ -10,7 +11,7 @@ import { SummaryFormatterService } from '../summary-formatter';
   templateUrl: './installation-summary.html',
   styleUrl: './installation-summary.css',
 })
-export class InstallationSummary {
+export class InstallationSummary implements OnInit {
 
   readonly clientData    = input.required<ClientFormData>();
   readonly serviceData   = input.required<ServiceFormData>();
@@ -19,8 +20,13 @@ export class InstallationSummary {
   readonly goBack = output<void>();
 
   private readonly formatter = inject(SummaryFormatterService);
+  readonly supabase = inject(SupabaseService);
 
   copied = false;
+
+  ngOnInit(): void {
+    this.supabase.resetStatus();
+  }
 
   get clientName(): string {
     return this.formatter.getClientName(this.clientData());
@@ -66,6 +72,10 @@ export class InstallationSummary {
     );
   }
 
+  get isNaturalClient(): boolean {
+    return this.clientData().clientType === 'natural';
+  }
+
   async onCopy(): Promise<void> {
     const text = this.formatter.buildWhatsAppText(
       this.clientData(),
@@ -98,6 +108,10 @@ export class InstallationSummary {
     );
     const encoded = encodeURIComponent(text);
     window.open(`https://wa.me/?text=${encoded}`, '_blank');
+  }
+
+  async onSaveToDatabase(): Promise<void> {
+    await this.supabase.saveClient(this.clientData());
   }
 
   onGoBack(): void {
