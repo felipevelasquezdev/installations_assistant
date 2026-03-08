@@ -5,10 +5,13 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TechnicalFormData } from '../installation-form';
 import { StepComponent } from '../../../core/models/step.model';
 import { InstallationFormService } from '../installation-form';
+import { BarcodeScanner } from '../../../shared/barcode-scanner/barcode-scanner';
+
+type ScanTarget = 'ponSn' | 'antennaMac' | 'mac' | null;
 
 @Component({
   selector: 'app-technical-info',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, BarcodeScanner],
   templateUrl: './technical-info.html',
   styleUrl: './technical-info.css',
 })
@@ -22,6 +25,7 @@ export class TechnicalInfo implements StepComponent<TechnicalFormData>, OnInit {
   private readonly formService = inject(InstallationFormService);
 
   readonly isFiber = signal(true);
+  readonly activeScanTarget = signal<ScanTarget>(null);
 
   readonly form = this.fb.group({
     // Fibra
@@ -115,7 +119,25 @@ export class TechnicalInfo implements StepComponent<TechnicalFormData>, OnInit {
     this.form.patchValue(data);
   }
 
+  openScanner(target: ScanTarget): void {
+    this.activeScanTarget.set(target);
+  }
+
+  onScanned(value: string): void {
+    const target = this.activeScanTarget();
+    if (target) {
+      this.form.controls[target].setValue(value);
+      this.form.controls[target].markAsDirty();
+    }
+    this.activeScanTarget.set(null);
+  }
+
+  onScanCancelled(): void {
+    this.activeScanTarget.set(null);
+  }
+
   onSubmit(): void {
+    this.form.markAllAsTouched();
     if (this.form.invalid) return;
     this.formCompleted.emit();
   }
