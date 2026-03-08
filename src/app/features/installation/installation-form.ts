@@ -30,10 +30,20 @@ export interface LocationFormData {
 }
 
 export interface TechnicalFormData {
+  // Fibra
+  napBox: number | null;
   seal: number | null;
   wire: number | null;
+  brand: string | null;
+  onuType: string | null;
+  ponSn: string | null;
+
+  // Radio Enlace
   node: string | null;
-  napBox: number | null;
+  antennaMac: string | null;
+  routerBrand: string | null;
+  serialNumber: string | null;
+  mac: string | null;
 }
 
 @Injectable({

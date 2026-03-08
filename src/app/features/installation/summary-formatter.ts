@@ -111,11 +111,20 @@ export class SummaryFormatterService {
     lines.push('');
     lines.push('*Datos Tecnicos*');
     if (service.serviceType === 'fiber') {
+      lines.push(`Caja NAP: ${technical.napBox}`);
       lines.push(`Precinto: ${technical.seal}`);
       lines.push(`Hilo: ${technical.wire}`);
-      lines.push(`Caja NAP: ${technical.napBox}`);
+      lines.push(`Marca: ${technical.brand}`);
+      lines.push(`Tipo ONU/ONT: ${technical.onuType}`);
+      lines.push(`PON SN: ${technical.ponSn}`);
     } else {
       lines.push(`Nodo: ${technical.node}`);
+      lines.push(`MAC Antena: ${technical.antennaMac}`);
+      lines.push(`Marca Router: ${technical.routerBrand}`);
+      lines.push(`SN: ${technical.serialNumber}`);
+      if (technical.mac) {
+        lines.push(`MAC: ${technical.mac}`);
+      }
     }
 
     return lines;

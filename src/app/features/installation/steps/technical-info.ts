@@ -24,10 +24,20 @@ export class TechnicalInfo implements StepComponent<TechnicalFormData>, OnInit {
   readonly isFiber = signal(true);
 
   readonly form = this.fb.group({
-    seal:   this.fb.control<number | null>(null),
-    wire:   this.fb.control<number | null>(null),
-    napBox: this.fb.control<number | null>(null),
-    node:   this.fb.control<string | null>(null),
+    // Fibra
+    napBox:       this.fb.control<number | null>(null),
+    seal:         this.fb.control<number | null>(null),
+    wire:         this.fb.control<number | null>(null),
+    brand:        this.fb.control<string | null>(null),
+    onuType:      this.fb.control<string | null>(null),
+    ponSn:        this.fb.control<string | null>(null),
+
+    // Radio Enlace
+    node:         this.fb.control<string | null>(null),
+    antennaMac:   this.fb.control<string | null>(null),
+    routerBrand:  this.fb.control<string | null>(null),
+    serialNumber: this.fb.control<string | null>(null),
+    mac:          this.fb.control<string | null>(null),
   });
 
   ngOnInit(): void {
@@ -40,36 +50,64 @@ export class TechnicalInfo implements StepComponent<TechnicalFormData>, OnInit {
   }
 
   private applyValidations(): void {
-    const { seal, wire, napBox, node } = this.form.controls;
+    const { napBox, seal, wire, brand, onuType, ponSn, node, antennaMac, routerBrand, serialNumber, mac } = this.form.controls;
 
     if (this.isFiber()) {
+      napBox.setValidators([Validators.required, Validators.min(1)]);
       seal.setValidators([Validators.required, Validators.min(1)]);
       wire.setValidators([Validators.required, Validators.min(1)]);
-      napBox.setValidators([Validators.required, Validators.min(1)]);
+      brand.setValidators(Validators.required);
+      onuType.setValidators(Validators.required);
+      ponSn.setValidators(Validators.required);
+
       node.clearValidators();
+      antennaMac.clearValidators();
+      routerBrand.clearValidators();
+      serialNumber.clearValidators();
+      mac.clearValidators();
+
       node.reset(null);
+      antennaMac.reset(null);
+      routerBrand.reset(null);
+      serialNumber.reset(null);
+      mac.reset(null);
     } else {
       node.setValidators(Validators.required);
+      antennaMac.setValidators(Validators.required);
+      routerBrand.setValidators(Validators.required);
+      serialNumber.setValidators(Validators.required);
+
+      napBox.clearValidators();
       seal.clearValidators();
       wire.clearValidators();
-      napBox.clearValidators();
+      brand.clearValidators();
+      onuType.clearValidators();
+      ponSn.clearValidators();
+
+      napBox.reset(null);
       seal.reset(null);
       wire.reset(null);
-      napBox.reset(null);
+      brand.reset(null);
+      onuType.reset(null);
+      ponSn.reset(null);
     }
 
-    seal.updateValueAndValidity();
-    wire.updateValueAndValidity();
-    napBox.updateValueAndValidity();
-    node.updateValueAndValidity();
+    Object.values(this.form.controls).forEach(c => c.updateValueAndValidity());
   }
 
   getData(): TechnicalFormData {
     return {
-      seal:   this.form.controls.seal.value,
-      wire:   this.form.controls.wire.value,
-      napBox: this.form.controls.napBox.value,
-      node:   this.form.controls.node.value,
+      napBox:       this.form.controls.napBox.value,
+      seal:         this.form.controls.seal.value,
+      wire:         this.form.controls.wire.value,
+      brand:        this.form.controls.brand.value,
+      onuType:      this.form.controls.onuType.value,
+      ponSn:        this.form.controls.ponSn.value,
+      node:         this.form.controls.node.value,
+      antennaMac:   this.form.controls.antennaMac.value,
+      routerBrand:  this.form.controls.routerBrand.value,
+      serialNumber: this.form.controls.serialNumber.value,
+      mac:          this.form.controls.mac.value,
     };
   }
 
