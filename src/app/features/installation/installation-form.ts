@@ -46,6 +46,10 @@ export interface TechnicalFormData {
   mac: string | null;
 }
 
+export interface ExtraFormData {
+  observations: string | null;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -54,6 +58,7 @@ export class InstallationFormService {
   readonly serviceData   = signal<ServiceFormData | null>(null);
   readonly locationData  = signal<LocationFormData | null>(null);
   readonly technicalData = signal<TechnicalFormData | null>(null);
+  readonly extraData     = signal<ExtraFormData | null>(null);
 
   saveClientData(data: ClientFormData): void {
     this.clientData.set(data);
@@ -69,5 +74,9 @@ export class InstallationFormService {
 
   saveTechnicalData(data: TechnicalFormData): void {
     this.technicalData.set(data);
+  }
+
+  saveExtraData(data: ExtraFormData): void {
+    this.extraData.set(data);
   }
 }

@@ -1,7 +1,7 @@
 // src/app/features/installation/summary-formatter.ts
 
 import { Injectable } from '@angular/core';
-import { ClientFormData, ServiceFormData, LocationFormData, TechnicalFormData } from './installation-form';
+import { ClientFormData, ServiceFormData, LocationFormData, TechnicalFormData, ExtraFormData } from './installation-form';
 
 @Injectable({
   providedIn: 'root'
@@ -65,7 +65,8 @@ export class SummaryFormatterService {
     client: ClientFormData,
     service: ServiceFormData,
     location: LocationFormData,
-    technical: TechnicalFormData
+    technical: TechnicalFormData,
+    extra: ExtraFormData
   ): string[] {
     const locationTypeName = location.locationType === 'neighborhood' ? 'Barrio' : 'Vereda';
     const addressLabel = location.locationType === 'neighborhood' ? 'Direccion' : 'Referencia';
@@ -127,6 +128,12 @@ export class SummaryFormatterService {
       }
     }
 
+    if (extra.observations) {
+      lines.push('');
+      lines.push('*Observaciones*');
+      lines.push(extra.observations);
+    }
+
     return lines;
   }
 
@@ -136,9 +143,10 @@ export class SummaryFormatterService {
     client: ClientFormData,
     service: ServiceFormData,
     location: LocationFormData,
-    technical: TechnicalFormData
+    technical: TechnicalFormData,
+    extra: ExtraFormData
   ): string {
-    return this.buildBaseLines(client, service, location, technical).join('\n');
+    return this.buildBaseLines(client, service, location, technical, extra).join('\n');
   }
 
   // ── COMPLETO (con perfiles) ───────────────────────────────────
@@ -147,9 +155,10 @@ export class SummaryFormatterService {
     client: ClientFormData,
     service: ServiceFormData,
     location: LocationFormData,
-    technical: TechnicalFormData
+    technical: TechnicalFormData,
+    extra: ExtraFormData
   ): string {
-    const lines = this.buildBaseLines(client, service, location, technical);
+    const lines = this.buildBaseLines(client, service, location, technical, extra);
 
     lines.push('');
     lines.push('*Perfil Router Board*');
@@ -180,19 +189,11 @@ export class SummaryFormatterService {
     const locationName = this.normalizeForProfile(location.locationName).toUpperCase();
     const addressOrReference = this.normalizeForProfile(location.addressOrReference).toUpperCase();
 
-    // Línea 1
     const line1 = `{codigoCliente} - ${clientName}${pointSuffix}${tvSuffix} - PRECINTO ${technical.seal} HILO ${hilo}`;
-
-    // Línea 2
     const line2 = `${locationPrefix} ${locationName} - ${addressOrReference}`;
-
-    // Línea 3
     const line3 = client.phone;
-
-    // Línea 4
     const line4 = `${location.latitude?.toFixed(6)}, ${location.longitude?.toFixed(6)}`;
 
-    // Línea 5
     let line5: string;
     if (service.hasInternet && service.hasTv) {
       line5 = `internet +${service.tvCount}TV - ${service.mbps}mbps`;
@@ -208,6 +209,7 @@ export class SummaryFormatterService {
   }
 
   // ── PERFIL ROUTER BOARD ──────────────────────────────────────
+
   buildRouterBoardProfile(
     client: ClientFormData,
     service: ServiceFormData,
