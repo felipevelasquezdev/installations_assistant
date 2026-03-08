@@ -5,6 +5,7 @@ import { ClientInfo } from './steps/client-info';
 import { ServiceInfo } from './steps/service-info';
 import { LocationInfo } from './steps/location-info';
 import { TechnicalInfo } from './steps/technical-info';
+import { ExtraData } from './steps/extra-data/extra-data';
 import { InstallationSummary } from './steps/installation-summary';
 import { InstallationFormService } from './installation-form';
 
@@ -18,11 +19,12 @@ const STEPS: StepConfig[] = [
   { index: 2, title: 'Informacion del servicio' },
   { index: 3, title: 'Ubicacion' },
   { index: 4, title: 'Datos tecnicos' },
+  { index: 5, title: 'Informacion adicional' },
 ];
 
 @Component({
   selector: 'app-installation',
-  imports: [ClientInfo, ServiceInfo, LocationInfo, TechnicalInfo, InstallationSummary],
+  imports: [ClientInfo, ServiceInfo, LocationInfo, TechnicalInfo, ExtraData, InstallationSummary],
   templateUrl: './installation.html',
   styleUrl: './installation.css',
 })
@@ -34,6 +36,7 @@ export class Installation {
   readonly serviceInfoRef   = viewChild(ServiceInfo);
   readonly locationInfoRef  = viewChild(LocationInfo);
   readonly technicalInfoRef = viewChild(TechnicalInfo);
+  readonly extraDataRef     = viewChild(ExtraData);
 
   readonly currentStep = signal(1);
 
@@ -41,6 +44,7 @@ export class Installation {
   readonly serviceData   = this.formService.serviceData;
   readonly locationData  = this.formService.locationData;
   readonly technicalData = this.formService.technicalData;
+  readonly extraData     = this.formService.extraData;
 
   readonly totalSteps = STEPS.length;
 
@@ -68,6 +72,10 @@ export class Installation {
       const data = this.technicalInfoRef()?.getData();
       if (data) this.formService.saveTechnicalData(data);
     }
+    if (this.currentStep() === 5) {
+      const data = this.extraDataRef()?.getData();
+      if (data) this.formService.saveExtraData(data);
+    }
     this.currentStep.update(step => step + 1);
   }
 
@@ -83,6 +91,10 @@ export class Installation {
     if (this.currentStep() === 4) {
       const data = this.technicalInfoRef()?.getData();
       if (data) this.formService.saveTechnicalData(data);
+    }
+    if (this.currentStep() === 5) {
+      const data = this.extraDataRef()?.getData();
+      if (data) this.formService.saveExtraData(data);
     }
     this.currentStep.update(step => step - 1);
   }

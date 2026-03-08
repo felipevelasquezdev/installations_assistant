@@ -1,7 +1,7 @@
 // src/app/features/installation/steps/installation-summary.ts
 
 import { Component, input, output, inject, OnInit } from '@angular/core';
-import { ClientFormData, ServiceFormData, LocationFormData, TechnicalFormData } from '../installation-form';
+import { ClientFormData, ServiceFormData, LocationFormData, TechnicalFormData, ExtraFormData } from '../installation-form';
 import { SummaryFormatterService } from '../summary-formatter';
 import { SupabaseService } from '../supabase';
 
@@ -17,6 +17,7 @@ export class InstallationSummary implements OnInit {
   readonly serviceData   = input.required<ServiceFormData>();
   readonly locationData  = input.required<LocationFormData>();
   readonly technicalData = input.required<TechnicalFormData>();
+  readonly extraData     = input.required<ExtraFormData>();
   readonly goBack = output<void>();
 
   private readonly formatter = inject(SummaryFormatterService);
@@ -81,7 +82,8 @@ export class InstallationSummary implements OnInit {
       this.clientData(),
       this.serviceData(),
       this.locationData(),
-      this.technicalData()
+      this.technicalData(),
+      this.extraData()
     );
     await navigator.clipboard.writeText(text);
     this.copied = true;
@@ -93,7 +95,8 @@ export class InstallationSummary implements OnInit {
       this.clientData(),
       this.serviceData(),
       this.locationData(),
-      this.technicalData()
+      this.technicalData(),
+      this.extraData()
     );
     const encoded = encodeURIComponent(text);
     window.open(`https://wa.me/?text=${encoded}`, '_blank');
@@ -104,7 +107,8 @@ export class InstallationSummary implements OnInit {
       this.clientData(),
       this.serviceData(),
       this.locationData(),
-      this.technicalData()
+      this.technicalData(),
+      this.extraData()
     );
     const encoded = encodeURIComponent(text);
     window.open(`https://wa.me/?text=${encoded}`, '_blank');

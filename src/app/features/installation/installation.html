@@ -53,12 +53,21 @@
       />
     }
 
+    @if (currentStep() === 5) {
+      <app-extra-data
+        [savedData]="extraData()"
+        (formCompleted)="nextStep()"
+        (goBack)="prevStep()"
+      />
+    }
+
     @if (isLastStep()) {
       <app-installation-summary
         [clientData]="clientData()!"
         [serviceData]="serviceData()!"
         [locationData]="locationData()!"
         [technicalData]="technicalData()!"
+        [extraData]="extraData()!"
         (goBack)="prevStep()"
       />
     }
