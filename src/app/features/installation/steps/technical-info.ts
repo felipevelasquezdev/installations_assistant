@@ -7,7 +7,7 @@ import { StepComponent } from '../../../core/models/step.model';
 import { InstallationFormService } from '../installation-form';
 import { BarcodeScanner } from '../../../shared/barcode-scanner/barcode-scanner';
 
-type ScanTarget = 'ponSn' | 'antennaMac' | 'mac' | null;
+type ScanTarget = 'ponSn' | 'serialNumber' | null;
 
 @Component({
   selector: 'app-technical-info',
