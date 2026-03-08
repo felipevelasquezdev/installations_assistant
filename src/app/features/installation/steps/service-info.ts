@@ -1,10 +1,22 @@
 // src/app/features/installation/steps/service-info.ts
 
 import { Component, inject, output, input, OnInit, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ServiceType } from '../../../core/models/client.model';
 import { ServiceFormData } from '../installation-form';
 import { StepComponent } from '../../../core/models/step.model';
+
+function fiberServiceValidator(control: AbstractControl): ValidationErrors | null {
+  const serviceType = control.get('serviceType')?.value;
+  const hasInternet = control.get('hasInternet')?.value;
+  const hasTv = control.get('hasTv')?.value;
+
+  if (serviceType === 'fiber' && !hasInternet && !hasTv) {
+    return { noFiberService: true };
+  }
+
+  return null;
+}
 
 @Component({
   selector: 'app-service-info',
@@ -27,11 +39,15 @@ export class ServiceInfo implements StepComponent<ServiceFormData>, OnInit {
     hasTv:        this.fb.control<boolean>(false),
     tvCount:      this.fb.control<number | null>(null),
     pointNumber:  this.fb.control<number | null>(null, [Validators.min(1)]),
-  });
+  }, { validators: fiberServiceValidator });
 
   readonly isFiber = signal(true);
   readonly showMbps = signal(true);
   readonly hasTv = signal(false);
+
+  get hasFiberServiceError(): boolean {
+    return this.form.hasError('noFiberService') && this.form.touched;
+  }
 
   ngOnInit(): void {
     const data = this.savedData();
@@ -112,6 +128,7 @@ export class ServiceInfo implements StepComponent<ServiceFormData>, OnInit {
   }
 
   onSubmit(): void {
+    this.form.markAllAsTouched();
     if (this.form.invalid) return;
     this.formCompleted.emit();
   }

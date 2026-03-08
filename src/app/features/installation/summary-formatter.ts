@@ -165,22 +165,30 @@ export class SummaryFormatterService {
   ): string {
     const clientName = this.normalizeForProfile(this.getClientName(client)).toUpperCase();
     const pointSuffix = service.pointNumber ? ` PUNTO ${service.pointNumber}` : '';
-    const tvSuffix = service.hasTv ? ` +${service.tvCount}TV` : '';
+    const tvSuffix = service.hasTv ? ' +TV' : '';
     const hilo = this.padHilo(technical.wire ?? 0);
-    const locationPrefix = this.getLocationPrefix(location);
+    const locationPrefix = location.locationType === 'neighborhood' ? 'BARRIO' : 'VEREDA';
     const locationName = this.normalizeForProfile(location.locationName).toUpperCase();
     const addressOrReference = this.normalizeForProfile(location.addressOrReference).toUpperCase();
 
+    // Línea 1
     const line1 = `{codigoCliente} - ${clientName}${pointSuffix}${tvSuffix} - PRECINTO ${technical.seal} HILO ${hilo}`;
-    const line2 = `(${locationPrefix} ${locationName} (${addressOrReference}))`;
+
+    // Línea 2
+    const line2 = `${locationPrefix} ${locationName} - ${addressOrReference}`;
+
+    // Línea 3
     const line3 = client.phone;
+
+    // Línea 4
     const line4 = `${location.latitude?.toFixed(6)}, ${location.longitude?.toFixed(6)}`;
 
+    // Línea 5
     let line5: string;
     if (service.hasInternet && service.hasTv) {
-      line5 = `solo internet +${service.tvCount}TV ${service.mbps}mbps`;
+      line5 = `internet +${service.tvCount}TV - ${service.mbps}mbps`;
     } else if (service.hasInternet && !service.hasTv) {
-      line5 = `solo internet ${service.mbps}mbps`;
+      line5 = `solo internet - ${service.mbps}mbps`;
     } else if (!service.hasInternet && service.hasTv) {
       line5 = `solo ${service.tvCount}TV`;
     } else {
@@ -191,7 +199,6 @@ export class SummaryFormatterService {
   }
 
   // ── PERFIL ROUTER BOARD ──────────────────────────────────────
-
   buildRouterBoardProfile(
     client: ClientFormData,
     service: ServiceFormData,
@@ -201,7 +208,7 @@ export class SummaryFormatterService {
     const locationNoSpaces = this.toUpperNoSpaces(location.locationName);
     const clientName = this.getClientName(client);
     const pointSuffix = this.getPointSuffix(service.pointNumber);
-    const locationPrefix = this.getLocationPrefix(location);
+    const locationPrefix = location.locationType === 'neighborhood' ? 'BARRIO' : 'VEREDA';
     const locationName = this.normalizeForProfile(location.locationName).toUpperCase();
     const addressOrReference = this.normalizeForProfile(location.addressOrReference).toUpperCase();
 
@@ -236,7 +243,8 @@ export class SummaryFormatterService {
     const coordsPart = service.serviceType === 'radio'
       ? ` (${location.latitude?.toFixed(6)}, ${location.longitude?.toFixed(6)})`
       : '';
-    const line3 = `{codigoCliente}: ${fullNameUpper}${pointLabel} - (${locationPrefix} ${locationName}${nodePart} (${addressOrReference}${coordsPart}))`;
+
+    const line3 = `{codigoCliente}: ${fullNameUpper}${pointLabel} (${locationPrefix} ${locationName} - ${addressOrReference}${coordsPart})`;
 
     return [line1, line2, line3].join('\n');
   }
